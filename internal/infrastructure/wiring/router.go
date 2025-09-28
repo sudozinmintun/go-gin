@@ -15,6 +15,7 @@ func SetupRouter(registry *Registry) *gin.Engine {
 		categoryGroup.GET("", registry.CategoryHandler.GetCategories)
 		categoryGroup.GET("/:id", registry.CategoryHandler.GetCategoryByID)
 		categoryGroup.DELETE("/:id", registry.CategoryHandler.DeleteCategory)
+		categoryGroup.PUT("/:id", registry.CategoryHandler.UpdateCategory)
 	}
 
 	return r

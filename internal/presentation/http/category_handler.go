@@ -124,3 +124,50 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Category deleted successfully"})
 }
+
+func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
+	idStr := c.Param("id")
+	categoryIdUint64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid category ID format"})
+		return
+	}
+	categoryId := uint(categoryIdUint64)
+
+	var req dto.CreateCategoryRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	category, err := h.service.UpdateCategory(c.Request.Context(), req.Name, req.Description, req.Unit, categoryId)
+
+	if err != nil {
+		// FIX 1: Check for the domain.ErrNotFound from the Service/Repository
+		if errors.Is(err, domain.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()}) // Returns "category not found"
+			return
+		}
+
+		if errors.Is(err, application.ErrCategoryAlreadyExists) {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check for application errors
+		if errors.Is(err, application.ErrInvalidCategoryName) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		// Generic error handler
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update category"}) // Changed message to update
+		return
+	}
+
+	res := dto.CategoryResponse{
+		ID:          category.ID,
+		Name:        category.Name,
+		Description: category.Description,
+		Unit:        category.Unit,
+	}
+	c.JSON(http.StatusOK, res)
+}

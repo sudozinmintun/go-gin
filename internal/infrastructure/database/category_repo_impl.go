@@ -25,6 +25,27 @@ func (r *CategoryRepositoryImpl) Save(ctx context.Context, category *domain.Cate
 	return model.ToCategoryDomain(catModel), nil
 }
 
+func (r *CategoryRepositoryImpl) Update(ctx context.Context, category *domain.Category) (*domain.Category, error) {
+	result := r.DB.WithContext(ctx).
+		Model(&model.CategoryModel{}).
+		Where("id = ?", category.ID).
+		Updates(model.CategoryModel{
+			Name:        category.Name,
+			Description: category.Description,
+			Unit:        category.Unit,
+		})
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, domain.ErrNotFound
+	}
+
+	return category, nil
+}
+
 func (r *CategoryRepositoryImpl) FindByID(ctx context.Context, id uint) (*domain.Category, error) {
 	var catModel model.CategoryModel
 

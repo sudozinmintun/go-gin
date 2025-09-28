@@ -8,4 +8,5 @@ type CategoryRepository interface {
 	FindAll(ctx context.Context) ([]*Category, error)
 	FindByName(ctx context.Context, name string) (*Category, error)
 	Delete(ctx context.Context, id uint) error
+	Update(ctx context.Context, category *Category) (*Category, error)
 }
