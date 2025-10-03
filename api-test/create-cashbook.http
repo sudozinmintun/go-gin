@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/v1/cashbooks HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Buy a laptop",
+  "description": "Acer laptop buy",
+  "amount": 10
+}

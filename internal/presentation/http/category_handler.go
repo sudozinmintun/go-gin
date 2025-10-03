@@ -139,6 +139,7 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	category, err := h.service.UpdateCategory(c.Request.Context(), req.Name, req.Description, req.Unit, categoryId)
 
 	if err != nil {

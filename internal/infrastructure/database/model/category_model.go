@@ -8,7 +8,7 @@ import (
 type CategoryModel struct {
 	gorm.Model
 	ID          uint   `gorm:"primaryKey"`
-	Name        string `gorm:"size:255;not null;uniqueIndex"`
+	Name        string `gorm:"size:255;null"`
 	Description string `gorm:"type:text"`
 	Unit        string `gorm:"size:50"`
 }
